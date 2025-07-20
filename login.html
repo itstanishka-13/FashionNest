@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FashionNest - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0bbff, #d291bc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      width: 340px;
+      text-align: center;
+    }
+    h2 {
+      color: #6a0dad;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    button {
+      background: linear-gradient(to right, #6a0dad, #d291bc);
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    a {
+      display: block;
+      margin-top: 15px;
+      color: #6a0dad;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-box">
+  <h2>Welcome Back</h2>
+  <input type="email" id="email" placeholder="Email Address">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <a href="signup.html">Don't have an account? Sign Up</a>
+</div>
+
+<script>
+  function login() {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+
+    const matchedUser = users.find(
+      user => user.email.toLowerCase() === email.toLowerCase() && user.password === password
+    );
+
+    if (!matchedUser) {
+      alert("❌ Invalid email or password!");
+      return;
+    }
+
+    localStorage.setItem("currentUser", JSON.stringify(matchedUser));
+    alert("✅ Login successful!");
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>

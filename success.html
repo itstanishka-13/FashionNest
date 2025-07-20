@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Successful - FashionNest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0bbff, #d291bc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #333;
+    }
+    .box {
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+    h2 {
+      color: #6a0dad;
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 10px;
+    }
+    .summary {
+      text-align: left;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    button {
+      background: linear-gradient(to right, #6a0dad, #d291bc);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>✅ Order Placed Successfully!</h2>
+  <p>Thank you for shopping with <strong>FashionNest</strong> 💜</p>
+  <div class="summary" id="order-summary">
+    <!-- Order details will be inserted here -->
+  </div>
+  <button onclick="window.location.href='index.html'">Continue Shopping</button>
+</div>
+
+<script>
+  const order = JSON.parse(localStorage.getItem("lastOrder"));
+  const box = document.getElementById("order-summary");
+
+  if (!order) {
+    box.innerHTML = "<p>No recent order found.</p>";
+  } else {
+    let html = `<strong>Customer:</strong> ${order.name}<br>`;
+    html += `<strong>Email:</strong> ${order.email}<br>`;
+    html += `<strong>Address:</strong> ${order.address}<br><br>`;
+    html += `<strong>Items:</strong><br>`;
+    order.cart.forEach(item => {
+      html += `• ${item.name} × ${item.qty} = ₹${item.qty * item.price}<br>`;
+    });
+    html += `<br><strong>Total Paid: ₹${order.total}</strong>`;
+    box.innerHTML = html;
+  }
+</script>
+
+</body>
+</html>

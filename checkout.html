@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FashionNest - Checkout</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0bbff, #d291bc);
+      color: #333;
+    }
+    .navbar {
+      background: #fff;
+      padding: 16px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar a {
+      color: #6a0dad;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #6a0dad;
+      margin-bottom: 30px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: 'Poppins', sans-serif;
+    }
+    #placeOrder {
+      background: linear-gradient(to right, #6a0dad, #d291bc);
+      color: white;
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 16px;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+    #placeOrder:hover {
+      opacity: 0.9;
+    }
+    .order-summary {
+      margin-top: 20px;
+      background: #f7f7f7;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🌐 Navbar -->
+<div class="navbar">
+  <a href="index.html">🏠 Home</a>
+  <a href="cart.html">🛒 Cart</a>
+  <a href="checkout.html">💳 Checkout</a>
+  <a href="profile.html">👤 Profile</a>
+  <a href="#" onclick="logout()" style="color: #2196f3;">📘 Logout</a>
+</div>
+
+<!-- 💳 Checkout Form -->
+<div class="container">
+  <h2>🧾 Checkout</h2>
+  <input type="text" id="name" placeholder="Full Name">
+  <input type="email" id="email" placeholder="Email Address">
+  <textarea id="address" placeholder="Delivery Address" rows="4"></textarea>
+
+  <div class="order-summary" id="order-summary">
+    <!-- Item summary will be injected here -->
+  </div>
+
+  <button id="placeOrder">Place Order</button>
+</div>
+<script>
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'login.html';
+  }
+
+  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+
+  let summaryBox = document.getElementById("order-summary");
+  let summaryHTML = `<strong>Items in Cart:</strong><br>`;
+  let total = 0;
+
+  cart.forEach(item => {
+    const subtotal = item.price * item.qty;
+    summaryHTML += `${item.name} × ${item.qty} = ₹${subtotal}<br>`;
+    total += subtotal;
+  });
+
+  summaryHTML += `<br><strong>Total: ₹${total}</strong>`;
+  summaryBox.innerHTML = summaryHTML;
+
+  document.getElementById("placeOrder").onclick = () => {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const address = document.getElementById("address").value.trim();
+
+    if (!name || !email || !address) {
+      alert("Please fill all the details!");
+      return;
+    }
+
+    if (cart.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+
+    const orderDetails = {
+      name,
+      email,
+      address,
+      cart,
+      total,
+      date: new Date().toLocaleString()
+    };
+
+    // ✅ Save order to the matching user account
+    users = users.map(user => {
+      if (user.email.toLowerCase() === currentUser.email.toLowerCase()) {
+        const updatedOrders = user.orders || [];
+        updatedOrders.push(orderDetails);
+        return { ...user, orders: updatedOrders };
+      }
+      return user;
+    });
+
+    // ✅ Update localStorage
+    localStorage.setItem("users", JSON.stringify(users));
+    localStorage.setItem("currentUser", JSON.stringify({
+      ...currentUser,
+      orders: [...(currentUser.orders || []), orderDetails]
+    }));
+
+    localStorage.removeItem("cart");
+    localStorage.setItem("lastOrder", JSON.stringify(orderDetails));
+    window.location.href = "success.html";
+  };
+</script>
+</body>
+</html>

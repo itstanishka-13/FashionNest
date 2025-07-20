@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Cart - FashionNest</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0bbff, #d291bc);
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      background: #fff;
+      padding: 16px;
+      display: flex;
+      justify-content: space-around; /* 🔧 FIXED SPACING */
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar a {
+      color: #6a0dad;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+    h1 {
+      text-align: center;
+      color: #fff;
+      margin-top: 30px;
+    }
+    #cart-list {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+    .cart-item {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .cart-item h3 {
+      color: #6a0dad;
+    }
+    .qty-btn, .remove-btn, #clear-btn, #buy-btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .qty-btn {
+      background: #d291bc;
+      color: white;
+    }
+    .remove-btn {
+      background: #ff4d4d;
+      color: white;
+    }
+    #clear-btn {
+      background: #ff6b81;
+      margin-bottom: 20px;
+      display: block;
+      margin: 0 auto 20px;
+    }
+    #buy-btn {
+      background: #6a0dad;
+      color: white;
+      display: block;
+      margin: 20px auto;
+    }
+    #total {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ FIXED NAVBAR -->
+<div class="navbar">
+  <a href="index.html">🏠 Home</a>
+  <a href="cart.html">🛒 Cart</a>
+  <a href="checkout.html">💳 Checkout</a>
+  <a href="profile.html">👤 Profile</a>
+  <a href="#" onclick="logout()" style="color: #ff4d4d;">🚪 Logout</a>
+</div>
+
+<h1>🛒 Your Cart</h1>
+<button id="clear-btn" onclick="clearCart()">🧹 Clear Cart</button>
+
+<div id="cart-list"></div>
+<p id="total"></p>
+<button id="buy-btn" onclick="handleBuy()">🛍️ Buy Now</button>
+
+<script>
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const list = document.getElementById('cart-list');
+
+  function renderCart() {
+    list.innerHTML = '';
+    let total = 0;
+
+    if (cart.length === 0) {
+      list.innerHTML = "<p style='text-align:center;color:white;'>Your cart is empty 😢</p>";
+      document.getElementById('total').innerText = '';
+      return;
+    }
+
+    cart.forEach((item, index) => {
+      if (!item.qty) item.qty = 1;
+      const itemTotal = item.qty * item.price;
+      total += itemTotal;
+
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+      div.innerHTML = `
+        <h3>${item.name}</h3>
+        <p>Price: ₹${item.price}</p>
+        <p>${item.description}</p>
+        <div>
+          Quantity:
+          <button class="qty-btn" onclick="decreaseQty(${index})">−</button>
+          <span>${item.qty}</span>
+          <button class="qty-btn" onclick="increaseQty(${index})">+</button>
+        </div>
+        <p><strong>Subtotal:</strong> ₹${itemTotal}</p>
+        <button class="remove-btn" onclick="removeItem(${index})">Remove ❌</button>
+      `;
+      list.appendChild(div);
+    });
+
+    document.getElementById('total').innerText = `Total: ₹${total}`;
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+  }
+
+  function increaseQty(index) {
+    cart[index].qty++;
+    renderCart();
+  }
+
+  function decreaseQty(index) {
+    if (cart[index].qty > 1) {
+      cart[index].qty--;
+    } else {
+      removeItem(index);
+    }
+    renderCart();
+  }
+
+  function clearCart() {
+    if (cart.length === 0) {
+      alert("No items to clear! 🧹");
+      return;
+    }
+    if (confirm("Are you sure you want to clear your cart?")) {
+      localStorage.removeItem('cart');
+      cart = [];
+      renderCart();
+    }
+  }
+
+  function handleBuy() {
+    if (cart.length === 0) {
+      alert("🛍️ Your cart is empty! Add items before buying.");
+      return;
+    }
+    window.location.href = 'checkout.html';
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'login.html';
+  }
+
+  renderCart();
+</script>
+
+</body>
+</html>
